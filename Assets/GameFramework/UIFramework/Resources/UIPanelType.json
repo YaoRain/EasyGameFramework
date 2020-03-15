@@ -1,0 +1,24 @@
+{
+    "uiPanelList": [
+        {
+            "panelTypeString": "BackGround",
+            "panelPath": "Prefab/Backgroud"
+        },
+        {
+            "panelTypeString": "StartMenu",
+            "panelPath": "Prefab/StartMenuPanel"
+        },
+        {
+            "panelTypeString": "GameInfo",
+            "panelPath": "Prefab/GameInfoPanel"
+        },
+        {
+            "panelTypeString": "Setting",
+            "panelPath": "Prefab/SettingPanel"
+        },
+        {
+            "panelTypeString": "MainUI",
+            "panelPath": "Prefab/MainUI"
+        }
+    ]
+}
