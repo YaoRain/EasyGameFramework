@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{55CA0F59-23DD-4941-E4AE-E2CCC50920B2}</ProjectGuid>
+    <ProjectGuid>{68510A3B-E272-6B29-2304-F3B87E6E3198}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -73,34 +73,34 @@
      <None Include="Assets\ArtRes\Font\Pixel Font - Tripfive\_README.txt" />
      <None Include="Assets\ArtRes\Font\arlishugbmd_test\Readme.txt" />
  <Reference Include="Unity.Timeline.Editor">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.VSCode.Editor">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro.Editor">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Timeline">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
  </Reference>
  <Reference Include="Unity.CollabProxy.Editor">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Rider.Editor">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.2D.Sprite.Editor">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.UI">
- <HintPath>F:/unityProject/ProjectF/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+ <HintPath>F:/unityProject/EasyGameFramework/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine">
  <HintPath>E:/U3D/editor/2019.3.2f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
