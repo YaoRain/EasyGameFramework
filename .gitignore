@@ -2,5 +2,5 @@ Library/
 Temp/
 *.sln
 *.csproj
-obj/Debug/
+obj/Debug
 .vscode/
