@@ -6,17 +6,18 @@ using UnityEngine;
 /// 输入管理器，用于检测按键输入并向事件中心发送对应事件
 /// </summary>
 public class InputManager : Singleton<InputManager> {
-    /// <summary>
-    /// 开始在FixedUpdate中检测按键
-    /// </summary>
-    public void StartInputListenFixed () {
-        MonoManager.Instance.AddFixedUpdateEvent (CheckInput);
-    }
-    /// <summary>
-    /// 停止在FixedUpdate中检测按键
-    /// </summary>
-    public void EndInputListenFixed () {
-        MonoManager.Instance.RemoveFixedUpdateEvent (CheckInput);
+    List<KeyCode> upKeyTester;
+    public InputManager () {
+        upKeyTester = new List<KeyCode> {
+            KeyCode.W,
+            KeyCode.A,
+            KeyCode.D,
+            KeyCode.Q,
+            KeyCode.E,
+            KeyCode.J,
+            KeyCode.S,
+            KeyCode.Space
+        };
     }
 
     public void StartInputListenAny () {
@@ -52,48 +53,39 @@ public class InputManager : Singleton<InputManager> {
     }
 
     /// <summary>
-    /// 检测输入的按键
-    /// </summary>
-    public void CheckInput () {
-        if (Input.GetKeyDown (KeyCode.W)) {
-            KeyDown (KeyCode.W);
-        }
-        if (Input.GetKeyUp (KeyCode.W)) {
-            KeyUp (KeyCode.W);
-        }
-        if (Input.GetKey (KeyCode.W)) {
-            KeyKeep (KeyCode.W);
-        }
-        if (Input.GetKey (KeyCode.A)) {
-            KeyKeep (KeyCode.A);
-        }
-        if (Input.GetKey (KeyCode.D)) {
-            KeyKeep (KeyCode.D);
-        }
-    }
-
-    /// <summary>
-    /// 检测按到的任何按键
+    /// 检测抬起的任何按键
     /// </summary>
     void anyKeyUp () {
-        if (Input.GetKeyUp (KeyCode.W)) {
-            KeyUp (KeyCode.W);
+        // if (Input.GetKeyUp (KeyCode.W)) {
+        //     KeyUp (KeyCode.W);
+        // }
+        // if (Input.GetKeyUp (KeyCode.A)) {
+        //     KeyUp (KeyCode.A);
+        // }
+        // if (Input.GetKeyUp (KeyCode.D)) {
+        //     KeyUp (KeyCode.D);
+        // }
+        // if (Input.GetKeyUp (KeyCode.Q)) {
+        //     KeyUp (KeyCode.Q);
+        // }
+        // if (Input.GetKeyUp (KeyCode.E)) {
+        //     KeyUp (KeyCode.E);
+        // }   
+        // if (Input.GetKeyUp (KeyCode.J)) {
+        //     KeyUp (KeyCode.J);
+        // }
+        // if (Input.GetKeyUp (KeyCode.S)) {
+        //     KeyUp (KeyCode.S);
+        // }
+        // if (Input.GetKeyUp (KeyCode.Space))
+        // {
+        //     KeyCode
+        // }
+        foreach (KeyCode key in Enum.GetValues (typeof (KeyCode))) {
+            if (Input.GetKeyUp (key)) {
+                KeyUp (key);
+            };
         }
-        if (Input.GetKeyUp (KeyCode.A)) {
-            KeyUp (KeyCode.A);
-        }
-        if (Input.GetKeyUp (KeyCode.D)) {
-            KeyUp (KeyCode.D);
-        }
-        if (Input.GetKeyUp (KeyCode.Q)) {
-            KeyUp (KeyCode.Q);
-        }
-        if (Input.GetKeyUp (KeyCode.E)) {
-            KeyUp (KeyCode.E);
-        }   
-        if (Input.GetKeyUp (KeyCode.J)) {
-            KeyUp (KeyCode.J);
-        }   
     }
 
     /// <summary>
@@ -114,7 +106,7 @@ public class InputManager : Singleton<InputManager> {
                 }
             }
         }
-        anyKeyUp();
+        anyKeyUp ();
     }
 
     private void CheckInputUpdate () {
