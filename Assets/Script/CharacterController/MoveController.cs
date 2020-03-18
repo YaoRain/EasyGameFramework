@@ -10,6 +10,8 @@ public class MoveController : MonoBehaviour {
     public float _walkSpeed = 2f;
     public float _rotaSpeed = 30f;
     public float _jumpSpeed = 4f;
+    public float _rollSpeed = 2f;
+
     public float hightOfGround = 0;
 
     public float targetZMoveSingle = 0; // 前后轴向的输入信号
@@ -18,7 +20,7 @@ public class MoveController : MonoBehaviour {
     public float transTime = 0.1f; // 平滑函数的过渡时间
     public float zMoveSingle = 0, xMoveSingle = 0, rMoveSingle = 0; // 平滑函数计算出的信号
     private float ZTempSingle, XTempSingle, RTempSingle; // 临时变量
-    public float singleWeight = 1.0f;
+    public float singleWeight = 1.0f; // 移动信号输入强度
 
     public float moveSingle = 0;
     public Vector3 modelForward = new Vector3 (); // 模型的面向
@@ -29,6 +31,8 @@ public class MoveController : MonoBehaviour {
         isTurnLeft = false, isTurnRight = false,
         isGoBack = false, isJump = false, isRoll = false; // 这些变量表示现在正在按下什么按键
 
+    public bool isOnRollAnim = false;
+
     RaycastHit hit; // 存储射线检测的详细信息
 
     void Awake () {
@@ -37,8 +41,8 @@ public class MoveController : MonoBehaviour {
         EventCenter.Instance.AddEventListener ("keyDown", KeyDownDogAction);
         EventCenter.Instance.AddEventListener ("enterJumpAnim", DisableRota);
         EventCenter.Instance.AddEventListener ("exitJumpAnim", EnableRota);
-        EventCenter.Instance.AddEventListener ("enterRoll",DisableRota);
-        EventCenter.Instance.AddEventListener ("exitRoll",EnableRota);
+        EventCenter.Instance.AddEventListener ("enterRoll",DisableControl);
+        EventCenter.Instance.AddEventListener ("exitRoll",EnableControl);
     }
 
     // Update is called once per frame
@@ -79,6 +83,18 @@ public class MoveController : MonoBehaviour {
 
     public void DisableRota (object obj) {
         rotaEnable = false;
+    }
+
+    public void EnableControl(object obj) {
+        //EnableRota(null);
+        inputEnable = true;
+        isOnRollAnim = false;
+    }
+
+    public void DisableControl(object obj) {
+        //DisableRota(null);
+        inputEnable = false;
+        isOnRollAnim = true;
     }
 
     // 检测按键按下
