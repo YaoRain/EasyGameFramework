@@ -9,9 +9,11 @@ public class MainUI : BasePanel {
     private Button _gameInfoButton;
     private Button _settingButton;
     private CanvasGroup _startMenuPanelCG;
+    private Text _InfoText;
 
-    private void Start() {
+    private void Awake() {
         Init();
+        EventCenter.Instance.AddEventListener("keyDown",KeyDownAction);
     }
 
     public override void Init () {
@@ -19,6 +21,7 @@ public class MainUI : BasePanel {
         _gameInfoButton = _mainUIPanel.Find ("GameInfoButton").GetComponent<Button> ();
         _settingButton = _mainUIPanel.Find ("SettingButton").GetComponent<Button> ();
         _startMenuPanelCG = _mainUIPanel.GetComponent<CanvasGroup> ();
+        _InfoText = _mainUIPanel.Find("Info").GetComponent<Text>();
         SetListener ();
     }
 
@@ -39,5 +42,19 @@ public class MainUI : BasePanel {
     public override void onResume () {
         _startMenuPanelCG.blocksRaycasts = true;
         Debug.Log("MainUI on resume");
+    }
+
+    public void KeyDownAction(object obj){
+        KeyCode key = (KeyCode) obj;
+        if(key == KeyCode.P){
+            MoveController role = GameObject.Find("InputHandle").GetComponent<MoveController>();
+            string info;
+            if(role.isWalk){
+                info = "role is walking";
+            }else{
+                info = "role is running";
+            }
+            _InfoText.text = info;
+        }
     }
 }
