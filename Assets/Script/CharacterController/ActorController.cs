@@ -21,7 +21,7 @@ public class ActorController : MonoBehaviour {
         anim = model.GetComponent<Animator> ();
         rb = this.GetComponent<Rigidbody> ();
         gSensor = this.GetComponentInChildren<OnGroundSensor> ();
-
+        this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = false;
         EventCenter.Instance.AddEventListener("enterAtkAnim",EnterAtkAnim);
         EventCenter.Instance.AddEventListener("exitAtkAnim",ExitAtkAnim);
     }
@@ -64,7 +64,7 @@ public class ActorController : MonoBehaviour {
         }
 
         // 攻击
-        if (moveController.isAtk) {
+        if (moveController.isAtk&&!isAtkAnim) {
             anim.SetTrigger("Atk");
         }
     }
@@ -96,7 +96,7 @@ public class ActorController : MonoBehaviour {
         }
 
         // 攻击
-        if(moveController.isAtk){
+        if(moveController.isAtk&&!isAtkAnim){
             Atk();
         }
     }
@@ -110,10 +110,12 @@ public class ActorController : MonoBehaviour {
     }
 
     public void EnterAtkAnim(object obj){
+        this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = true;
         isAtkAnim = true;
         Debug.Log("isAnim");
     }
     public void ExitAtkAnim(object obj){
+        this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = false;
         isAtkAnim =false;
     }
 }
