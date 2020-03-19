@@ -3,22 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ActorController : MonoBehaviour {
-    public Transform model;
+    private Transform model;
     private Animator anim;
     private MoveController moveController;
     private Rigidbody rb;
     private OnGroundSensor gSensor;
+    
     private float jumpFoward;
-
     public float jumpSpeed = 0;
-
     private Vector3 jumpSpeedV = new Vector3 (0, 0, 0);
+
+    public bool isAtkAnim = false;
+
     private void Awake () {
         moveController = this.GetComponent<MoveController> ();
         model = this.transform.Find ("Girl");
         anim = model.GetComponent<Animator> ();
         rb = this.GetComponent<Rigidbody> ();
         gSensor = this.GetComponentInChildren<OnGroundSensor> ();
+
+        EventCenter.Instance.AddEventListener("enterAtkAnim",EnterAtkAnim);
+        EventCenter.Instance.AddEventListener("exitAtkAnim",ExitAtkAnim);
     }
 
     void Start () {
@@ -27,10 +32,11 @@ public class ActorController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        SwitchAnim ();
+        
     }
 
     private void FixedUpdate () {
+        SwitchAnim ();
         Move ();
     }
 
@@ -38,13 +44,12 @@ public class ActorController : MonoBehaviour {
         anim.SetFloat ("MoveSingle", moveController.moveSingle);
         if (moveController.isJump) {
             anim.SetTrigger ("Jump");
-            moveController.isJump = false;
         }
 
         // 切换跳跃和下落
         if (rb.velocity.y > 0.5) {
-            jumpFoward = Mathf.Lerp (jumpFoward, 1.0f, 0.25f);
-        } else if (rb.velocity.y < -0.5) {
+            jumpFoward = 1.0f;
+        } else if (rb.velocity.y < -0.8) {
             jumpFoward = Mathf.Lerp (jumpFoward, -1.0f, 0.25f);
         } else {
             jumpFoward = Mathf.Lerp (jumpFoward, 0, 0.25f);
@@ -56,6 +61,11 @@ public class ActorController : MonoBehaviour {
         if (moveController.isRoll || rb.velocity.y < -10.0f) {
             anim.SetTrigger ("Roll");
             moveController.isRoll = false;
+        }
+
+        // 攻击
+        if (moveController.isAtk) {
+            anim.SetTrigger("Atk");
         }
     }
 
@@ -77,16 +87,33 @@ public class ActorController : MonoBehaviour {
         Vector3 planeMove;
         if (moveController.isOnRollAnim) { // 翻滚
             planeMove = model.transform.forward.normalized * moveController._runSpeed *0.7f;
-            rb.velocity = rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
+            rb.velocity = new Vector3(planeMove.x, rb.velocity.y, planeMove.z);
         } else { // 平面移动
             planeMove = moveController.modelForward * moveController._runSpeed; // 描述平面上的运动
-            rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z) + jumpSpeedV;
+            rb.velocity = new Vector3(planeMove.x, rb.velocity.y, planeMove.z);
+            rb.velocity += jumpSpeedV; // 跳跃
             jumpSpeedV.y = 0;
-            //this.transform.Translate((moveController.modelForward*moveController._runSpeed)*Time.fixedDeltaTime);}
+        }
+
+        // 攻击
+        if(moveController.isAtk){
+            Atk();
         }
     }
     private void Jump () {
         jumpSpeedV.y = jumpSpeed;
+        moveController.isJump = false;
+    }
+    private void Atk () {
+        moveController.isAtk = false;
+        EventCenter.Instance.TiggerEvent("Atk",this.gameObject);
     }
 
+    public void EnterAtkAnim(object obj){
+        isAtkAnim = true;
+        Debug.Log("isAnim");
+    }
+    public void ExitAtkAnim(object obj){
+        isAtkAnim =false;
+    }
 }

@@ -17,7 +17,7 @@ public class MoveController : MonoBehaviour {
     public float targetZMoveSingle = 0; // 前后轴向的输入信号
     public float targetXMoveSingle = 0; // 水平轴向的输入信号
     public float targetRMoveSingle = 0; // 旋转的输入信号
-    public float transTime = 0.1f; // 平滑函数的过渡时间
+    public float transTime = 0.2f; // 平滑函数的过渡时间
     public float zMoveSingle = 0, xMoveSingle = 0, rMoveSingle = 0; // 平滑函数计算出的信号
     private float ZTempSingle, XTempSingle, RTempSingle; // 临时变量
     public float singleWeight = 1.0f; // 移动信号输入强度
@@ -32,6 +32,7 @@ public class MoveController : MonoBehaviour {
         isGoBack = false, isJump = false, isRoll = false; // 这些变量表示现在正在按下什么按键
 
     public bool isOnRollAnim = false;
+    public bool isOnAtkAnim = false;
 
     RaycastHit hit; // 存储射线检测的详细信息
 
@@ -41,8 +42,10 @@ public class MoveController : MonoBehaviour {
         EventCenter.Instance.AddEventListener ("keyDown", KeyDownDogAction);
         EventCenter.Instance.AddEventListener ("enterJumpAnim", DisableRota);
         EventCenter.Instance.AddEventListener ("exitJumpAnim", EnableRota);
-        EventCenter.Instance.AddEventListener ("enterRoll",DisableControl);
-        EventCenter.Instance.AddEventListener ("exitRoll",EnableControl);
+        EventCenter.Instance.AddEventListener ("enterRoll",EnterRoll);
+        EventCenter.Instance.AddEventListener ("exitRoll",exitRoll);
+        EventCenter.Instance.AddEventListener ("enterAtkAnim",DisableControl);
+        EventCenter.Instance.AddEventListener ("exitAtkAnim",EnableControl);
     }
 
     // Update is called once per frame
@@ -69,7 +72,7 @@ public class MoveController : MonoBehaviour {
         float xMoveSingleV = xMoveSingle * Mathf.Sqrt (1 - zMoveSingle * zMoveSingle / 2);
 
         float targetWeigth = isWalk ? 0.5f : 1.0f; // 通过给信号强度加权，控制走路和跑步
-        singleWeight = Mathf.Lerp (singleWeight, targetWeigth, 0.25f);
+        singleWeight = Mathf.Lerp (singleWeight, targetWeigth, 0.1f);
 
         if(rotaEnable){ // 如果允许旋转模，则更新输入向量的方向和大小
             modelForward = singleWeight * (this.transform.forward * zMoveSingleU + this.transform.right * xMoveSingleV); //模型朝向
@@ -86,15 +89,21 @@ public class MoveController : MonoBehaviour {
     }
 
     public void EnableControl(object obj) {
-        //EnableRota(null);
         inputEnable = true;
-        isOnRollAnim = false;
     }
 
     public void DisableControl(object obj) {
-        //DisableRota(null);
         inputEnable = false;
+    }
+
+    public void EnterRoll(object obj){
+        DisableControl(obj);
         isOnRollAnim = true;
+    }
+
+    public void exitRoll(object obj){
+        EnableControl(obj);
+        isOnRollAnim = false;
     }
 
     // 检测按键按下
@@ -160,7 +169,7 @@ public class MoveController : MonoBehaviour {
             isGoBack = false;
         }
         if (key == KeyCode.Space) {
-            isJump = false;
+            //isJump = false;
         }
         if (key == KeyCode.LeftShift){
             isRoll = false;
