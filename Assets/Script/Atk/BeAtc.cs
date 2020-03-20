@@ -6,7 +6,7 @@ public class BeAtc : MonoBehaviour
 {
 
     private void Awake() {
-        EventCenter.Instance.AddEventListener("Atk",AtkAction);
+        EventCenter.Instance.AddEventListener("atkMonster",BeAtcAction);
     }
 
     // private void OnTriggerEnter(Collider hit) {
@@ -18,11 +18,14 @@ public class BeAtc : MonoBehaviour
     //     };
     // }
 
-    public void AtkAction(object obj){
+    public void BeAtcAction(object obj){
+        List<GameObject> atkAction = (List<GameObject>) obj;
+        if(atkAction[1].GetComponent<MonsterInfo>().name == this.GetComponent<MonsterInfo>().name){
+            string name = this.transform.GetComponent<MonsterInfo>().name;
+            string playerName = atkAction[0].name;
+            Debug.Log(name+" be atked by "+playerName);
 
-    }
-    public void BeAtcAction(){
-        string name = this.transform.GetComponent<MonsterInfo>().name;
-        Debug.Log(name+" be atked");
+            AudioManagerMy.Instance.PlayAudio("hit_05");
+        }
     }
 }

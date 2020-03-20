@@ -8,6 +8,8 @@ public class Chapter1Root : MonoBehaviour
     void Start()
     {
         UIManager.Instance.PushPanel(UIPanelType.MainUI);
+        AudioManagerMy.Instance.PlayBackgroundMusic("Bgm1");
+        Debug.Log("playBgm");
         InputManager.Instance.StartInputListenAny();
     }
 }
