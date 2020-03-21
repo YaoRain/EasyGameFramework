@@ -15,6 +15,8 @@ public class ActorController : MonoBehaviour {
 
     public bool isAtkAnim = false;
 
+    public PlayerInfo playerInfo;
+
     private void Awake () {
         moveController = this.GetComponent<MoveController> ();
         model = this.transform.Find ("Girl");
@@ -24,6 +26,7 @@ public class ActorController : MonoBehaviour {
         this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = false;
         EventCenter.Instance.AddEventListener("enterAtkAnim",EnterAtkAnim);
         EventCenter.Instance.AddEventListener("exitAtkAnim",ExitAtkAnim);
+        playerInfo = this.GetComponent<PlayerInfo>();
     }
 
     void Start () {
