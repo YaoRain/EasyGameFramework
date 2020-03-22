@@ -28,6 +28,8 @@ public class ActorController : MonoBehaviour {
         this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider> ().enabled = false;
         EventCenter.Instance.AddEventListener ("enterAtkAnim", EnterAtkAnim);
         EventCenter.Instance.AddEventListener ("exitAtkAnim", ExitAtkAnim);
+        EventCenter.Instance.AddEventListener ("onPendulum",OnPendulum);
+        EventCenter.Instance.AddEventListener ("exitPendulum",ExitPendulum);
         playerInfo = this.GetComponent<PlayerInfo> ();
     }
 
@@ -128,6 +130,23 @@ public class ActorController : MonoBehaviour {
     }
     private void Step () {
 
+    }
+    private void OnPendulum(object obj){
+        GameObject pendulum = (GameObject)obj;
+        rb.useGravity = false;
+        moveController.ClearSpeed();
+        rb.velocity = Vector3.zero;
+        this.transform.SetParent(pendulum.transform);
+        moveController.inputEnable = false;
+    }
+    private void ExitPendulum(object obj){
+        PendulumDynamic pendulum = this.transform.parent.GetComponent<PendulumDynamic>();
+        this.transform.up = Vector3.up;
+        moveController.modelForward = model.forward;
+        //model.forward.normalized* pendulum.state_vector.y*pendulum.rod_length*2; // 把摆球角速度转化为线速度
+        rb.useGravity = true;
+        moveController.inputEnable = true;
+        this.transform.parent = null;
     }
     public void EnterAtkAnim (object obj) {
         this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_/HitColl").GetComponent<CapsuleCollider> ().enabled = true;
