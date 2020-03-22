@@ -9,7 +9,7 @@ public class HitMonster : MonoBehaviour
         if(monster.gameObject.layer == LayerMask.NameToLayer("Monster")){
             List<GameObject> playerAndMonster = new List<GameObject>{this.GetComponentInParent<ActorController>().gameObject,monster.gameObject};
             EventCenter.Instance.TiggerEvent("atkMonster",playerAndMonster);
-            ParticleSystem particle = this.transform.Find("SwordHitBlue").GetComponent<ParticleSystem>();
+            ParticleSystem particle = this.transform.parent.Find("SwordHitBlue").GetComponent<ParticleSystem>();
             particle.Play();
             //monster.GetComponent<BeAtc>().BeAtcAction();
             this.GetComponent<CapsuleCollider>().enabled = false;

@@ -8,7 +8,8 @@ public class ActorController : MonoBehaviour {
     private MoveController moveController;
     private Rigidbody rb;
     private OnGroundSensor gSensor;
-    
+    private OnMonsterSensor mSensor;
+
     private float jumpFoward;
     public float jumpSpeed = 0;
     private Vector3 jumpSpeedV = new Vector3 (0, 0, 0);
@@ -23,10 +24,11 @@ public class ActorController : MonoBehaviour {
         anim = model.GetComponent<Animator> ();
         rb = this.GetComponent<Rigidbody> ();
         gSensor = this.GetComponentInChildren<OnGroundSensor> ();
-        this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = false;
-        EventCenter.Instance.AddEventListener("enterAtkAnim",EnterAtkAnim);
-        EventCenter.Instance.AddEventListener("exitAtkAnim",ExitAtkAnim);
-        playerInfo = this.GetComponent<PlayerInfo>();
+        mSensor = this.GetComponentInChildren<OnMonsterSensor> ();
+        this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider> ().enabled = false;
+        EventCenter.Instance.AddEventListener ("enterAtkAnim", EnterAtkAnim);
+        EventCenter.Instance.AddEventListener ("exitAtkAnim", ExitAtkAnim);
+        playerInfo = this.GetComponent<PlayerInfo> ();
     }
 
     void Start () {
@@ -35,7 +37,7 @@ public class ActorController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        
+
     }
 
     private void FixedUpdate () {
@@ -54,6 +56,9 @@ public class ActorController : MonoBehaviour {
             jumpFoward = 1.0f;
         } else if (rb.velocity.y < -0.8) {
             jumpFoward = Mathf.Lerp (jumpFoward, -1.0f, 0.25f);
+            if(mSensor.isOnMonster){ // 如果是下落并且碰撞到怪物,则跳跃
+                jumpFoward = 1.0f;
+            }
         } else {
             jumpFoward = Mathf.Lerp (jumpFoward, 0, 0.25f);
         }
@@ -67,8 +72,8 @@ public class ActorController : MonoBehaviour {
         }
 
         // 攻击
-        if (moveController.isAtk&&!isAtkAnim) {
-            anim.SetTrigger("Atk");
+        if (moveController.isAtk && !isAtkAnim) {
+            anim.SetTrigger ("Atk");
         }
     }
 
@@ -87,20 +92,30 @@ public class ActorController : MonoBehaviour {
         if (moveController.isJump && gSensor.isOnGround) {
             Jump ();
         }
+        // 踩到怪物后跳跃
+        if (rb.velocity.y < -0.8 && mSensor.isOnMonster){
+            Jump();
+            moveController.ClearSpeed();
+            mSensor.transform.Find("StarBurst2D").GetComponent<ParticleSystem>().Play();
+            rb.velocity = jumpSpeedV;
+            jumpSpeedV.y = 0;
+            moveController.rotaEnable = true;
+        }
+
         Vector3 planeMove;
         if (moveController.isOnRollAnim) { // 翻滚
-            planeMove = model.transform.forward.normalized * moveController._runSpeed *0.7f;
-            rb.velocity = new Vector3(planeMove.x, rb.velocity.y, planeMove.z);
-        } else { // 平面移动
+            planeMove = model.transform.forward.normalized * moveController._runSpeed * 0.7f;
+            rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
+        } else if(!mSensor.isOnMonster) { // 平面移动
             planeMove = moveController.modelForward * moveController._runSpeed; // 描述平面上的运动
-            rb.velocity = new Vector3(planeMove.x, rb.velocity.y, planeMove.z);
+            rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
             rb.velocity += jumpSpeedV; // 跳跃
             jumpSpeedV.y = 0;
         }
 
         // 攻击
-        if(moveController.isAtk&&!isAtkAnim){
-            Atk();
+        if (moveController.isAtk && !isAtkAnim) {
+            Atk ();
         }
     }
     private void Jump () {
@@ -109,16 +124,18 @@ public class ActorController : MonoBehaviour {
     }
     private void Atk () {
         moveController.isAtk = false;
-        EventCenter.Instance.TiggerEvent("Atk",this.gameObject);
+        EventCenter.Instance.TiggerEvent ("Atk", this.gameObject);
     }
+    private void Step () {
 
-    public void EnterAtkAnim(object obj){
-        this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = true;
-        isAtkAnim = true;
-        Debug.Log("isAnim");
     }
-    public void ExitAtkAnim(object obj){
-        this.transform.Find("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider>().enabled = false;
-        isAtkAnim =false;
+    public void EnterAtkAnim (object obj) {
+        this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_/HitColl").GetComponent<CapsuleCollider> ().enabled = true;
+        isAtkAnim = true;
+        Debug.Log ("isAnim");
+    }
+    public void ExitAtkAnim (object obj) {
+        this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_/HitColl").GetComponent<CapsuleCollider> ().enabled = false;
+        isAtkAnim = false;
     }
 }

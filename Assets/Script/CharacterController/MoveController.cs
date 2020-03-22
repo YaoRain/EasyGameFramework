@@ -80,6 +80,10 @@ public class MoveController : MonoBehaviour {
         moveSingle = modelForward.magnitude; //移动信号向量的模
     }
 
+    public void ClearSpeed(){
+        modelForward = Vector3.zero;
+    } // 使角色速度为0
+
     public void EnableRota (object obj) {
         rotaEnable = true;
     }

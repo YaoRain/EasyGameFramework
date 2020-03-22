@@ -1064,6 +1064,7 @@ GameObject:
   - component: {fileID: 226316371}
   - component: {fileID: 226316370}
   - component: {fileID: 226316369}
+  - component: {fileID: 226316374}
   m_Layer: 0
   m_Name: InputHandle (1)
   m_TagString: Untagged
@@ -1115,6 +1116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpSpeed: 6
   isAtkAnim: 0
+  playerInfo: {fileID: 0}
 --- !u!114 &226316372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1175,6 +1177,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &226316374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226316368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb708ace9c1c2a408cbf8d8e25255c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: player
+  atk: 20
 --- !u!4 &237291634 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4947743726954784, guid: 63ce2b31e16acab4d8a41f884c36333c,
@@ -2292,6 +2308,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterName: redCube
+  type: Cube
+  hp: 100
+  moveSpeed: 1
+  isDie: 0
+  position: []
 --- !u!4 &513899640 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3601636916036306070, guid: 99817cf1ef81cc64e803b42919750797,
@@ -2305,7 +2326,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 513899635}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54944055331890f488148dc99536c18d, type: 3}
   m_Name: 
@@ -2819,7 +2840,7 @@ PrefabInstance:
     - target: {fileID: 1484058393081176210, guid: 318830e16c9af9a449459f9b35ed0179,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 21.78
       objectReference: {fileID: 0}
     - target: {fileID: 1484058393081176210, guid: 318830e16c9af9a449459f9b35ed0179,
         type: 3}
@@ -4756,6 +4777,36 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1281295689}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1286146361
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1286146362}
+  m_Layer: 10
+  m_Name: StepColl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1286146362
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286146361}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1574979921}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1345008689
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4883,6 +4934,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpSpeed: 6
   isAtkAnim: 0
+  playerInfo: {fileID: 0}
 --- !u!114 &1367606415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5187,6 +5239,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterName: redDragon
+  type: Cube
+  hp: 100
+  moveSpeed: 1
+  isDie: 0
+  position: []
 --- !u!65 &1535248425
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5198,8 +5255,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 5, y: 3.38, z: 5}
-  m_Center: {x: 0, y: 1.87, z: 0}
+  m_Size: {x: 3.3627987, y: 3.4994617, z: 4.2130823}
+  m_Center: {x: 0.0067663193, y: 1.8102691, z: -0.11626023}
 --- !u!54 &1535248427
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5324,7 +5381,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1574979920}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.05
   m_Height: 0.32
   m_Direction: 2
@@ -6256,6 +6313,64 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1771347495
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1771347496}
+  - component: {fileID: 1771347498}
+  - component: {fileID: 1771347497}
+  m_Layer: 10
+  m_Name: HitColl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1771347496
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771347495}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1574979921}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1771347497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771347495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67e596251e3382047887cc1c2ca0bc17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!136 &1771347498
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771347495}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.05
+  m_Height: 0.32
+  m_Direction: 2
+  m_Center: {x: -0.001395762, y: -0.087772846, z: 0.06677796}
 --- !u!1001 &1771644901
 PrefabInstance:
   m_ObjectHideFlags: 0
