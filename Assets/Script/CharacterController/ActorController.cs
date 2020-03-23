@@ -15,7 +15,7 @@ public class ActorController : MonoBehaviour {
     private Vector3 jumpSpeedV = new Vector3 (0, 0, 0);
 
     public bool isAtkAnim = false;
-    public bool isOnPendulum =false;
+    public bool isOnPendulum = false;
 
     public PlayerInfo playerInfo;
 
@@ -26,11 +26,10 @@ public class ActorController : MonoBehaviour {
         rb = this.GetComponent<Rigidbody> ();
         gSensor = this.GetComponentInChildren<OnGroundSensor> ();
         mSensor = this.GetComponentInChildren<OnMonsterSensor> ();
-        this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_").GetComponent<CapsuleCollider> ().enabled = false;
         EventCenter.Instance.AddEventListener ("enterAtkAnim", EnterAtkAnim);
         EventCenter.Instance.AddEventListener ("exitAtkAnim", ExitAtkAnim);
-        EventCenter.Instance.AddEventListener ("onPendulum",OnPendulum);
-        EventCenter.Instance.AddEventListener ("exitPendulum",ExitPendulum);
+        EventCenter.Instance.AddEventListener ("onPendulum", OnPendulum);
+        EventCenter.Instance.AddEventListener ("exitPendulum", ExitPendulum);
         playerInfo = this.GetComponent<PlayerInfo> ();
     }
 
@@ -50,23 +49,23 @@ public class ActorController : MonoBehaviour {
 
     private void SwitchAnim () {
         anim.SetFloat ("MoveSingle", moveController.moveSingle);
-        if (moveController.isJump) {
-            anim.SetTrigger ("Jump");
-        }
-
         // 切换跳跃和下落
-        if (rb.velocity.y > 0.5) {
-            jumpFoward = 1.0f;
-        } else if (rb.velocity.y < -0.8) {
+        if ((moveController.isJump && gSensor.isOnGround) ||(rb.velocity.y > 0.1&& !gSensor.isOnGround) ) { // 更加严格的检测，避免动画切换延迟
+            jumpFoward = Mathf.Lerp (jumpFoward, 1.0f, 0.5f);
+        }
+        else if (rb.velocity.y < -0.8 && !gSensor.isOnGround) { // 速度向下且不在地面上
             mSensor.enabled = true; // 下落开启踩怪检测
             jumpFoward = Mathf.Lerp (jumpFoward, -1.0f, 0.25f);
-            if(mSensor.isOnMonster){ // 如果是下落并且碰撞到怪物,则跳跃
+            if (mSensor.isOnMonster) { // 如果是下落并且碰撞到怪物,则跳跃
                 jumpFoward = 1.0f;
             }
-        } else {
-            jumpFoward = Mathf.Lerp (jumpFoward, 0, 0.25f);
+        }else{
+            jumpFoward = Mathf.Lerp (jumpFoward, 0.0f, 0.25f);
         }
-        if(gSensor.isOnGround){
+        // } else if (rb.velocity.y > -0.8 && rb.velocity.y < 0.2) { // 速度不在上升和下降范围内，并且不在地面上
+        //     jumpFoward = Mathf.Lerp (jumpFoward, 0, 0.25f);
+        // }
+        if (gSensor.isOnGround) {
             mSensor.enabled = false; // 落地后关闭踩怪检测
             mSensor.isOnMonster = false;
         }
@@ -86,6 +85,11 @@ public class ActorController : MonoBehaviour {
     }
 
     private void Move () {
+        if (moveController.rotaEnable == false) { // 如果速度向量被锁，时刻检测是不是在跳跃动画中已经落地，如果是，就解锁速度向量
+            if (moveController.isJumpAnim && gSensor.isOnGround && rb.velocity.y < 0) {
+                moveController.EnableRota (null); // 如果这个时候再起跳，将不会有方向锁定
+            }
+        }
         // 如果moveSingle为0的话，modelForward为0向量，角色面向没有方向的向量会出问题，会自动回到初始位置
         if (moveController.moveSingle > 0.1) {
             // 用插值的办法，解决角色转动过于唐突的问题
@@ -98,17 +102,18 @@ public class ActorController : MonoBehaviour {
         }
         // 跳跃
         if (moveController.isJump && gSensor.isOnGround) {
+            //if(moveController.isJumpAnim == false) // 如果已经在跳跃动画中了，说明已经起跳，不可再给冲量
             Jump ();
         }
         // 离开摆球
         if (moveController.isJump && isOnPendulum) {
-            ExitPendulum(null);
+            ExitPendulum (null);
         }
         // 踩到怪物后跳跃
-        if (mSensor.isOnMonster && rb.velocity.y <= 0){
-            Jump();
-            moveController.ClearSpeed(); // 踩到怪后清空目前的速度
-            mSensor.transform.Find("StarBurst2D").GetComponent<ParticleSystem>().Play();
+        if (mSensor.isOnMonster && rb.velocity.y <= 0) {
+            Jump ();
+            moveController.ClearSpeed (); // 踩到怪后清空目前的速度
+            mSensor.transform.Find ("StarBurst2D").GetComponent<ParticleSystem> ().Play ();
             rb.velocity = jumpSpeedV;
             jumpSpeedV.y = 0;
             moveController.rotaEnable = true; // 解锁转向和移动
@@ -118,7 +123,7 @@ public class ActorController : MonoBehaviour {
         if (moveController.isOnRollAnim) { // 翻滚
             planeMove = model.transform.forward.normalized * moveController._runSpeed * 0.7f;
             rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
-        } else if(!mSensor.isOnMonster) { // 不在怪物身上的平面移动
+        } else if (!mSensor.isOnMonster) { // 不在怪物身上的平面移动
             planeMove = moveController.modelForward * moveController._runSpeed; // 描述平面上的运动
             rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
             rb.velocity += jumpSpeedV; // 跳跃
@@ -132,13 +137,24 @@ public class ActorController : MonoBehaviour {
         }
     }
     private void Jump () {
-        if(rb.velocity.y < -0.1f){ // 起跳前让速度归零，防止起跳后速度仍然为负
-            rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
+        if (rb.velocity.y < -0.1f) { // 起跳前让速度归零，防止起跳后速度仍然为负
+            rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z); // 接触到地面后，此处的执行比动画状态机的检测要早
+        }                                                                // 所以如果在落地前按下跳跃，则动画状态机检测不到速度为负的情况
+        jumpSpeedV.y = jumpSpeed;
+        moveController.isJump = false;
+        // moveController.isJump = false;
+        // Invoke("AnimJump",0.3f);
+    }
+    // 为了配合动画效果写的测试方法
+    public void AnimJump () {
+        if (rb.velocity.y < -0.1f) { // 起跳前让速度归零，防止起跳后速度仍然为负
+            rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z);
         }
         jumpSpeedV.y = jumpSpeed;
         moveController.isJump = false;
-        Debug.Log(jumpSpeedV.y + "rb.y: " + rb.velocity.y);
+        Debug.Log (jumpSpeedV.y + "rb.y: " + rb.velocity.y);
     }
+
     private void Atk () {
         moveController.isAtk = false;
         EventCenter.Instance.TiggerEvent ("Atk", this.gameObject);
@@ -146,18 +162,18 @@ public class ActorController : MonoBehaviour {
     private void Step () {
 
     }
-    private void OnPendulum(object obj){
+    private void OnPendulum (object obj) {
         isOnPendulum = true;
-        GameObject pendulum = (GameObject)obj;
+        GameObject pendulum = (GameObject) obj;
         rb.useGravity = false;
-        moveController.ClearSpeed();
+        moveController.ClearSpeed ();
         rb.velocity = Vector3.zero;
-        this.transform.SetParent(pendulum.transform);
+        this.transform.SetParent (pendulum.transform);
         moveController.inputEnable = false;
     }
-    private void ExitPendulum(object obj){
+    private void ExitPendulum (object obj) {
         moveController.isJump = false;
-        PendulumDynamic pendulum = this.transform.parent.GetComponent<PendulumDynamic>();
+        PendulumDynamic pendulum = this.transform.parent.GetComponent<PendulumDynamic> ();
         this.transform.up = Vector3.up;
         moveController.modelForward = model.forward;
         //model.forward.normalized* pendulum.state_vector.y*pendulum.rod_length*2; // 把摆球角速度转化为线速度

@@ -33,6 +33,7 @@ public class MoveController : MonoBehaviour {
 
     public bool isOnRollAnim = false;
     public bool isOnAtkAnim = false;
+    public bool isJumpAnim = false;
 
     RaycastHit hit; // 存储射线检测的详细信息
 
@@ -40,8 +41,15 @@ public class MoveController : MonoBehaviour {
         EventCenter.Instance.AddEventListener ("keyKeep", KeyKeepDogAction);
         EventCenter.Instance.AddEventListener ("keyUp", KeyUpDogAction);
         EventCenter.Instance.AddEventListener ("keyDown", KeyDownDogAction);
-        EventCenter.Instance.AddEventListener ("enterJumpAnim", DisableRota);
-        EventCenter.Instance.AddEventListener ("exitJumpAnim", EnableRota);
+        EventCenter.Instance.AddEventListener ("enterJumpAnim",(obj)=>{
+            isJumpAnim = true;
+            DisableRota(obj);
+        } );
+        //EventCenter.Instance.AddEventListener ("exitJumpAnim", EnableRota);
+        EventCenter.Instance.AddEventListener ("exitJumpAnim", (obj)=>{
+            isJumpAnim = false;
+            EnableRota(obj);
+        });
         EventCenter.Instance.AddEventListener ("enterRoll",EnterRoll);
         EventCenter.Instance.AddEventListener ("exitRoll",exitRoll);
         EventCenter.Instance.AddEventListener ("enterAtkAnim",DisableControl);
