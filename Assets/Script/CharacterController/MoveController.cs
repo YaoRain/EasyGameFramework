@@ -17,7 +17,7 @@ public class MoveController : MonoBehaviour {
     public float targetZMoveSingle = 0; // 前后轴向的输入信号
     public float targetXMoveSingle = 0; // 水平轴向的输入信号
     public float targetRMoveSingle = 0; // 旋转的输入信号
-    public float transTime = 0.2f; // 平滑函数的过渡时间
+    public float transTime = 3f; // 平滑函数的过渡时间
     public float zMoveSingle = 0, xMoveSingle = 0, rMoveSingle = 0; // 平滑函数计算出的信号
     private float ZTempSingle, XTempSingle, RTempSingle; // 临时变量
     public float singleWeight = 1.0f; // 移动信号输入强度
@@ -101,12 +101,12 @@ public class MoveController : MonoBehaviour {
     }
 
     public void EnterRoll(object obj){
-        DisableControl(obj);
+        DisableRota(obj);
         isOnRollAnim = true;
     }
 
     public void exitRoll(object obj){
-        EnableControl(obj);
+        EnableRota(obj);
         isOnRollAnim = false;
     }
 

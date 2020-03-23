@@ -15,6 +15,7 @@ public class ActorController : MonoBehaviour {
     private Vector3 jumpSpeedV = new Vector3 (0, 0, 0);
 
     public bool isAtkAnim = false;
+    public bool isOnPendulum =false;
 
     public PlayerInfo playerInfo;
 
@@ -57,6 +58,7 @@ public class ActorController : MonoBehaviour {
         if (rb.velocity.y > 0.5) {
             jumpFoward = 1.0f;
         } else if (rb.velocity.y < -0.8) {
+            mSensor.enabled = true; // 下落开启踩怪检测
             jumpFoward = Mathf.Lerp (jumpFoward, -1.0f, 0.25f);
             if(mSensor.isOnMonster){ // 如果是下落并且碰撞到怪物,则跳跃
                 jumpFoward = 1.0f;
@@ -64,11 +66,15 @@ public class ActorController : MonoBehaviour {
         } else {
             jumpFoward = Mathf.Lerp (jumpFoward, 0, 0.25f);
         }
+        if(gSensor.isOnGround){
+            mSensor.enabled = false; // 落地后关闭踩怪检测
+            mSensor.isOnMonster = false;
+        }
         anim.SetBool ("IsOnGround", gSensor.isOnGround);
         anim.SetFloat ("JumpSpeed", jumpFoward);
 
         // 翻滚
-        if (moveController.isRoll || rb.velocity.y < -10.0f) {
+        if (moveController.isRoll || rb.velocity.y < -10.0f) { // 按下翻滚键，或从高空落下
             anim.SetTrigger ("Roll");
             moveController.isRoll = false;
         }
@@ -94,25 +100,30 @@ public class ActorController : MonoBehaviour {
         if (moveController.isJump && gSensor.isOnGround) {
             Jump ();
         }
+        // 离开摆球
+        if (moveController.isJump && isOnPendulum) {
+            ExitPendulum(null);
+        }
         // 踩到怪物后跳跃
-        if (rb.velocity.y < -0.8 && mSensor.isOnMonster){
+        if (mSensor.isOnMonster && rb.velocity.y <= 0){
             Jump();
-            moveController.ClearSpeed();
+            moveController.ClearSpeed(); // 踩到怪后清空目前的速度
             mSensor.transform.Find("StarBurst2D").GetComponent<ParticleSystem>().Play();
             rb.velocity = jumpSpeedV;
             jumpSpeedV.y = 0;
-            moveController.rotaEnable = true;
+            moveController.rotaEnable = true; // 解锁转向和移动
         }
 
-        Vector3 planeMove;
+        Vector3 planeMove; // 在xz平面上的移动
         if (moveController.isOnRollAnim) { // 翻滚
             planeMove = model.transform.forward.normalized * moveController._runSpeed * 0.7f;
             rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
-        } else if(!mSensor.isOnMonster) { // 平面移动
+        } else if(!mSensor.isOnMonster) { // 不在怪物身上的平面移动
             planeMove = moveController.modelForward * moveController._runSpeed; // 描述平面上的运动
             rb.velocity = new Vector3 (planeMove.x, rb.velocity.y, planeMove.z);
             rb.velocity += jumpSpeedV; // 跳跃
             jumpSpeedV.y = 0;
+            //if(!gSensor.isOnGround) jumpSpeedV.y = 0;
         }
 
         // 攻击
@@ -121,8 +132,12 @@ public class ActorController : MonoBehaviour {
         }
     }
     private void Jump () {
+        if(rb.velocity.y < -0.1f){ // 起跳前让速度归零，防止起跳后速度仍然为负
+            rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
+        }
         jumpSpeedV.y = jumpSpeed;
         moveController.isJump = false;
+        Debug.Log(jumpSpeedV.y + "rb.y: " + rb.velocity.y);
     }
     private void Atk () {
         moveController.isAtk = false;
@@ -132,6 +147,7 @@ public class ActorController : MonoBehaviour {
 
     }
     private void OnPendulum(object obj){
+        isOnPendulum = true;
         GameObject pendulum = (GameObject)obj;
         rb.useGravity = false;
         moveController.ClearSpeed();
@@ -140,6 +156,7 @@ public class ActorController : MonoBehaviour {
         moveController.inputEnable = false;
     }
     private void ExitPendulum(object obj){
+        moveController.isJump = false;
         PendulumDynamic pendulum = this.transform.parent.GetComponent<PendulumDynamic>();
         this.transform.up = Vector3.up;
         moveController.modelForward = model.forward;
@@ -147,6 +164,7 @@ public class ActorController : MonoBehaviour {
         rb.useGravity = true;
         moveController.inputEnable = true;
         this.transform.parent = null;
+        isOnPendulum = false;
     }
     public void EnterAtkAnim (object obj) {
         this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_/HitColl").GetComponent<CapsuleCollider> ().enabled = true;

@@ -11,6 +11,7 @@ public class SendMassage : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         foreach(var myEvent in enterEvent) {
+            //Debug.Log(myEvent);
             EventCenter.Instance.TiggerEvent(myEvent,null);
         }
     }

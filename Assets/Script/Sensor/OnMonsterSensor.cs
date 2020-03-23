@@ -6,7 +6,7 @@ public class OnMonsterSensor : MonoBehaviour
 {
     public CapsuleCollider capcol;
     public Collider[] outputCols;
-    public bool isOnMonster = true;
+    public bool isOnMonster = false;
     private Vector3 point1;
     private float radius;
     public GameObject playerInfo;
@@ -16,6 +16,7 @@ public class OnMonsterSensor : MonoBehaviour
         capcol = this.GetComponentInParent<CapsuleCollider>();
         playerInfo = this.transform.parent.gameObject;
         radius = capcol.radius;
+        isOnMonster = false;
     }
 
     private void FixedUpdate() {
