@@ -30,7 +30,8 @@ public class MoveController : MonoBehaviour {
     public bool isWalk = false, isRunning = false, isAtk = false,
         isMoveLeft = false, isMoveRight = false,isTurnLeft = false, 
         isTurnRight = false,isGoBack = false, isJump = false, 
-        isRoll = false, isCameraUp = false, isCameraDown; // 这些变量表示现在正在按下什么按键
+        isRoll = false, isCameraUp = false, isCameraDown,
+        isSkill = false; // 这些变量表示现在正在按下什么按键
 
     public bool isOnRollAnim = false;
     public bool isOnAtkAnim = false;
@@ -128,6 +129,9 @@ public class MoveController : MonoBehaviour {
         if (key == KeyCode.J) {
             isAtk = true;
         }
+        if (key == KeyCode.K){
+            isSkill = true;
+        }
         if (key == KeyCode.Space) {
             isJump = true;
         }
@@ -186,6 +190,9 @@ public class MoveController : MonoBehaviour {
         }
         if (key == KeyCode.J) {
             isAtk = false;
+        }
+        if (key == KeyCode.K) {
+            isSkill = false;
         }
         if (key == KeyCode.S) {
             isGoBack = false;

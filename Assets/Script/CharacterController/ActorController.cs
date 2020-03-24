@@ -9,7 +9,9 @@ public class ActorController : MonoBehaviour {
     private Rigidbody rb;
     private OnGroundSensor gSensor;
     private OnMonsterSensor mSensor;
-    private Transform camera;
+    private Transform myCamera;
+    private Transform skill;
+
 
     private float jumpFoward;
     public float jumpSpeed = 0;
@@ -27,12 +29,19 @@ public class ActorController : MonoBehaviour {
         rb = this.GetComponent<Rigidbody> ();
         gSensor = this.GetComponentInChildren<OnGroundSensor> ();
         mSensor = this.GetComponentInChildren<OnMonsterSensor> ();
-        camera = this.transform.Find("Camera").Find("Camera");
+        myCamera = this.transform.Find("Camera").Find("Camera");
         EventCenter.Instance.AddEventListener ("enterAtkAnim", EnterAtkAnim);
         EventCenter.Instance.AddEventListener ("exitAtkAnim", ExitAtkAnim);
         EventCenter.Instance.AddEventListener ("onPendulum", OnPendulum);
         EventCenter.Instance.AddEventListener ("exitPendulum", ExitPendulum);
+        EventCenter.Instance.AddEventListener ("enterSkill",(obj)=>{
+            StartCoroutine(EnterSkill(obj));
+            //EnterSkill(obj);
+        });
+        EventCenter.Instance.AddEventListener ("exitSkill",ExitSkill);
         playerInfo = this.GetComponent<PlayerInfo> ();
+        skill = this.transform.Find("Girl/Hip/Spine/Chest/Shoulder_R_/UArm_R_/DArm_R_/Hand_R_/Koyu1_R_/Koyu2_R_/Skill");
+        skill.gameObject.SetActive(false);
     }
 
     void Start () {
@@ -79,8 +88,12 @@ public class ActorController : MonoBehaviour {
         }
 
         // 攻击
-        if (moveController.isAtk && !isAtkAnim) {
+        if (moveController.isAtk /*&& !isAtkAnim*/) {
             anim.SetTrigger ("Atk");
+        }
+        // 技能
+        if (moveController.isSkill) {
+            anim.SetTrigger ("Skill");
         }
     }
 
@@ -102,8 +115,8 @@ public class ActorController : MonoBehaviour {
         }
         if (Mathf.Abs(moveController.hMoveSingle) > 0.1) {
             
-                camera.Rotate(new Vector3(-moveController.hMoveSingle*moveController._rotaSpeed*Time.fixedDeltaTime,0,0),Space.Self);
-            camera.eulerAngles = new Vector3(Mathf.Clamp(camera.eulerAngles.x,10,35),camera.eulerAngles.y,camera.eulerAngles.z);
+                myCamera.Rotate(new Vector3(-moveController.hMoveSingle*moveController._rotaSpeed*Time.fixedDeltaTime,0,0),Space.Self);
+            myCamera.eulerAngles = new Vector3(Mathf.Clamp(myCamera.eulerAngles.x,10,35),myCamera.eulerAngles.y,myCamera.eulerAngles.z);
         }
         // 跳跃
         if (moveController.isJump && gSensor.isOnGround) {
@@ -137,8 +150,12 @@ public class ActorController : MonoBehaviour {
         }
 
         // 攻击
-        if (moveController.isAtk && !isAtkAnim) {
+        if (moveController.isAtk) {
             Atk ();
+        }
+        // 技能
+        if (moveController.isSkill) {
+            Skill ();
         }
     }
     private void Jump () {
@@ -162,8 +179,13 @@ public class ActorController : MonoBehaviour {
 
     private void Atk () {
         moveController.isAtk = false;
-        EventCenter.Instance.TiggerEvent ("Atk", this.gameObject);
+        //EventCenter.Instance.TiggerEvent ("Atk", this.gameObject);
     }
+    private void Skill() {
+
+        moveController.isSkill = false;
+    }
+
     private void Step () {
 
     }
@@ -190,10 +212,19 @@ public class ActorController : MonoBehaviour {
     public void EnterAtkAnim (object obj) {
         this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_/HitColl").GetComponent<CapsuleCollider> ().enabled = true;
         isAtkAnim = true;
-        Debug.Log ("isAnim");
     }
     public void ExitAtkAnim (object obj) {
         this.transform.Find ("Girl/Hip/ULeg_L_/DLeg_L_/Foot_L_/HitColl").GetComponent<CapsuleCollider> ().enabled = false;
         isAtkAnim = false;
+    }
+
+    public void ExitSkill (object obj) {
+        skill.gameObject.SetActive(false);
+    }
+    IEnumerator EnterSkill (object obj) {
+        yield return new WaitForSeconds(0.3f);
+        skill.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.7f);
+        skill.gameObject.SetActive(false);
     }
 }
