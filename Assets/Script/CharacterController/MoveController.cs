@@ -17,9 +17,10 @@ public class MoveController : MonoBehaviour {
     public float targetZMoveSingle = 0; // 前后轴向的输入信号
     public float targetXMoveSingle = 0; // 水平轴向的输入信号
     public float targetRMoveSingle = 0; // 旋转的输入信号
+    public float targetHMoveSingle = 0; // 摄像机的俯角控制
     public float transTime = 3f; // 平滑函数的过渡时间
-    public float zMoveSingle = 0, xMoveSingle = 0, rMoveSingle = 0; // 平滑函数计算出的信号
-    private float ZTempSingle, XTempSingle, RTempSingle; // 临时变量
+    public float zMoveSingle = 0, xMoveSingle = 0, rMoveSingle = 0, hMoveSingle = 0; // 平滑函数计算出的信号
+    private float ZTempSingle, XTempSingle, RTempSingle, HTempSingle; // 临时变量
     public float singleWeight = 1.0f; // 移动信号输入强度
 
     public float moveSingle = 0;
@@ -27,9 +28,9 @@ public class MoveController : MonoBehaviour {
     public Vector3 cameraForward = new Vector3 (); // 摄像机朝向
 
     public bool isWalk = false, isRunning = false, isAtk = false,
-        isMoveLeft = false, isMoveRight = false,
-        isTurnLeft = false, isTurnRight = false,
-        isGoBack = false, isJump = false, isRoll = false; // 这些变量表示现在正在按下什么按键
+        isMoveLeft = false, isMoveRight = false,isTurnLeft = false, 
+        isTurnRight = false,isGoBack = false, isJump = false, 
+        isRoll = false, isCameraUp = false, isCameraDown; // 这些变量表示现在正在按下什么按键
 
     public bool isOnRollAnim = false;
     public bool isOnAtkAnim = false;
@@ -66,15 +67,18 @@ public class MoveController : MonoBehaviour {
             targetZMoveSingle = 0;
             targetXMoveSingle = 0;
             targetRMoveSingle = 0;
+            targetHMoveSingle = 0;
         } else {
             targetZMoveSingle = (isRunning ? 1.0f : 0f) - (isGoBack ? 1.0f : 0f);
             targetXMoveSingle = (isMoveRight ? 1.0f : 0f) - (isMoveLeft ? 1.0f : 0f);
             targetRMoveSingle = (isTurnRight ? 1.0f : 0f) - (isTurnLeft ? 1.0f : 0f);
+            targetHMoveSingle = (isCameraUp ? 1.0f : 0f) - (isCameraDown ? 1.0f : 0f);
         }
 
         zMoveSingle = Mathf.SmoothDamp (zMoveSingle, targetZMoveSingle, ref ZTempSingle, transTime);
         xMoveSingle = Mathf.SmoothDamp (xMoveSingle, targetXMoveSingle, ref XTempSingle, transTime);
         rMoveSingle = Mathf.SmoothDamp (rMoveSingle, targetRMoveSingle, ref RTempSingle, transTime);
+        hMoveSingle = Mathf.SmoothDamp (hMoveSingle, targetHMoveSingle, ref HTempSingle, transTime);
         // 通过映射函数把方形的值域转化为圆形
         float zMoveSingleU = zMoveSingle * Mathf.Sqrt (1 - xMoveSingle * xMoveSingle / 2);
         float xMoveSingleV = xMoveSingle * Mathf.Sqrt (1 - zMoveSingle * zMoveSingle / 2);
@@ -119,7 +123,7 @@ public class MoveController : MonoBehaviour {
     }
 
     // 检测按键按下
-    public void KeyDownDogAction (object obj) {
+    public void KeyDownDogAction(object obj) {
         KeyCode key = (KeyCode) obj;
         if (key == KeyCode.J) {
             isAtk = true;
@@ -155,6 +159,12 @@ public class MoveController : MonoBehaviour {
         if (key == KeyCode.S) {
             isGoBack = true;
         }
+        if (key == KeyCode.U) {
+            isCameraUp = true;
+        }
+        if (key == KeyCode.I) {
+            isCameraDown = true;
+        }
     }
     // 检测按键抬起
     public void KeyUpDogAction (object obj) {
@@ -185,6 +195,12 @@ public class MoveController : MonoBehaviour {
         }
         if (key == KeyCode.LeftShift){
             isRoll = false;
+        }
+        if (key == KeyCode.U) {
+            isCameraUp = false;
+        }
+        if (key == KeyCode.I) {
+            isCameraDown = false;
         }
     }
 }

@@ -9,6 +9,7 @@ public class ActorController : MonoBehaviour {
     private Rigidbody rb;
     private OnGroundSensor gSensor;
     private OnMonsterSensor mSensor;
+    private Transform camera;
 
     private float jumpFoward;
     public float jumpSpeed = 0;
@@ -26,6 +27,7 @@ public class ActorController : MonoBehaviour {
         rb = this.GetComponent<Rigidbody> ();
         gSensor = this.GetComponentInChildren<OnGroundSensor> ();
         mSensor = this.GetComponentInChildren<OnMonsterSensor> ();
+        camera = this.transform.Find("Camera").Find("Camera");
         EventCenter.Instance.AddEventListener ("enterAtkAnim", EnterAtkAnim);
         EventCenter.Instance.AddEventListener ("exitAtkAnim", ExitAtkAnim);
         EventCenter.Instance.AddEventListener ("onPendulum", OnPendulum);
@@ -50,7 +52,7 @@ public class ActorController : MonoBehaviour {
     private void SwitchAnim () {
         anim.SetFloat ("MoveSingle", moveController.moveSingle);
         // 切换跳跃和下落
-        if ((moveController.isJump && gSensor.isOnGround) ||(rb.velocity.y > 0.1&& !gSensor.isOnGround) ) { // 更加严格的检测，避免动画切换延迟
+        if ((moveController.isJump && gSensor.isOnGround) ||(rb.velocity.y > 0.3&& !gSensor.isOnGround) ) { // 更加严格的检测，避免动画切换延迟
             jumpFoward = Mathf.Lerp (jumpFoward, 1.0f, 0.5f);
         }
         else if (rb.velocity.y < -0.8 && !gSensor.isOnGround) { // 速度向下且不在地面上
@@ -62,15 +64,13 @@ public class ActorController : MonoBehaviour {
         }else{
             jumpFoward = Mathf.Lerp (jumpFoward, 0.0f, 0.25f);
         }
-        // } else if (rb.velocity.y > -0.8 && rb.velocity.y < 0.2) { // 速度不在上升和下降范围内，并且不在地面上
-        //     jumpFoward = Mathf.Lerp (jumpFoward, 0, 0.25f);
-        // }
         if (gSensor.isOnGround) {
             mSensor.enabled = false; // 落地后关闭踩怪检测
             mSensor.isOnMonster = false;
         }
         anim.SetBool ("IsOnGround", gSensor.isOnGround);
         anim.SetFloat ("JumpSpeed", jumpFoward);
+        anim.SetBool ("IsJump", moveController.isJump);
 
         // 翻滚
         if (moveController.isRoll || rb.velocity.y < -10.0f) { // 按下翻滚键，或从高空落下
@@ -99,6 +99,11 @@ public class ActorController : MonoBehaviour {
         // 旋转镜头
         if (Mathf.Abs (moveController.rMoveSingle) > 0.1) {
             this.transform.RotateAround (this.transform.position, Vector3.up, moveController._rotaSpeed * moveController.rMoveSingle * Time.fixedDeltaTime);
+        }
+        if (Mathf.Abs(moveController.hMoveSingle) > 0.1) {
+            
+                camera.Rotate(new Vector3(-moveController.hMoveSingle*moveController._rotaSpeed*Time.fixedDeltaTime,0,0),Space.Self);
+            camera.eulerAngles = new Vector3(Mathf.Clamp(camera.eulerAngles.x,10,35),camera.eulerAngles.y,camera.eulerAngles.z);
         }
         // 跳跃
         if (moveController.isJump && gSensor.isOnGround) {
